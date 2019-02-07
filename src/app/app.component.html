@@ -18,7 +18,7 @@
   </form>
 </div>
 
-<div *ngIf="(repos$ | async).length > 0 && (error$ | async) !== 404" class="table-container p-2">
+<div *ngIf="(repos$ | async).length >= 0 && (error$ | async) !== 404 && (error$ | async) !== 0" class="table-container p-2">
   <div class="card">
     <div class="card-header">
       <form>

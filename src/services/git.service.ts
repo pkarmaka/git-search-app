@@ -81,7 +81,7 @@ export class GitService {
       this.repos = [];
       // Sort the api data based on the no. of forks
       this.repos = Object.values(response).sort((a, b) => b.forks - a.forks);
-      this._error$.next(0);
+      this._error$.next(200);
       this._search$.next();
     }, (err) => {
       if (err.status === 404) {
