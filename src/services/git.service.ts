@@ -22,6 +22,7 @@ export class GitService {
   private _repos$ = new BehaviorSubject<any[]>([]);
   private repos = [];
   private _total$ = new BehaviorSubject<number>(0);
+  // Setting the default state of the page, with the rows set to 10
   private _state = {
     page: 1,
     pageSize: 10,
@@ -43,6 +44,7 @@ export class GitService {
     this._search$.next();
    }
 
+    // getter and setter methods
     get repos$() { return this._repos$.asObservable(); }
     get total$() { return this._total$.asObservable(); }
     get loading$() { return this._loading$.asObservable(); }
@@ -72,10 +74,12 @@ export class GitService {
     return of({repos, total});
   }
 
+  // call the api and populate _repos$ to supply to app component
   getOrgRepos(org: String) {
     this.http.get(`${this.api}/orgs/${org}/repos?per_page=100`).subscribe(
       (response) => {
       this.repos = [];
+      // Sort the api data based on the no. of forks
       this.repos = Object.values(response).sort((a, b) => b.forks - a.forks);
       this._error$.next(0);
       this._search$.next();

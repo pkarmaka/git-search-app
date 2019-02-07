@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { GitService } from './git.service';
+import { GitService } from '../services/git.service';
 import { FormControl } from '@angular/forms';
 import { NgbModule, NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
@@ -25,6 +25,7 @@ export class AppComponent {
     this.error$ = gitService.error$;
   }
 
+  // Call service to get list of repositories
   showRepos(orgName: String) {
     this.gitService.getOrgRepos(orgName);
   }
@@ -36,7 +37,9 @@ export class AppComponent {
     });
   }
 
-
+  /** Click on the icon beside a repo to load
+   *  a modal with the list of its latest commits
+   **/
   open(content, repo) {
     this.gitService.getCommits(repo.name, repo.owner.login).subscribe((response) => {
       this.commits = [];
