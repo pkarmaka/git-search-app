@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { GitService } from './git.service';
 import { FormControl } from '@angular/forms';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule, NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -13,29 +12,42 @@ import { map, startWith } from 'rxjs/operators';
 export class AppComponent {
   filter = new FormControl('');
   title = 'Github Search';
-  repos: Observable<any[]>;
+  repos$: Observable<any[]>;
+  total$: Observable<number>;
+  error$: Observable<number>;
   data = [];
-  isLoaded = false;
-  constructor(private gitService: GitService) {
-    this.repos = this.filter.valueChanges.pipe(
-      startWith(''),
-      map(text => this.search(text))
-    );
-   }
+  commits: Array<any> = [];
+  collectionSize;
+
+  constructor(public gitService: GitService, private modalService: NgbModal) {
+    this.repos$ = gitService.repos$;
+    this.total$ = gitService.total$;
+    this.error$ = gitService.error$;
+  }
 
   showRepos(orgName: String) {
-    this.gitService.getOrgRepos(orgName)
-      .subscribe((response) => {
-        this.data = Object.values(response).sort((a, b) => b.forks - a.forks);
-        this.isLoaded = true;
-        //  console.log(this.repos.sort((a, b) => b.forks - a.forks));
-      });
+    this.gitService.getOrgRepos(orgName);
   }
 
   search(text: string) {
     return this.data.filter(repo => {
       const term = text.toLowerCase();
       return repo.name.toLowerCase().includes(term);
+    });
+  }
+
+
+  open(content, repo) {
+    this.gitService.getCommits(repo.name, repo.owner.login).subscribe((response) => {
+      this.commits = [];
+      Object.values(response).slice(0, 5).forEach((commit) => {
+        this.commits.push({
+          message: commit.commit.message,
+          author: commit.author != null ? commit.author.login : '-',
+          date: commit.commit.author.date
+        });
+      });
+      this.modalService.open(content);
     });
   }
 }

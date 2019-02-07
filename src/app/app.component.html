@@ -10,7 +10,7 @@
   <form class="form-inline" style="text-align:center">
     <div class="form-group">
       <label for="org" class="mr-2">Enter Organization Name</label>
-      <input #org type="text" class="form-control mr-2" id="org" required>
+      <input #org type="text" class="form-control mr-2" id="org" required placeholder="Eg: Netflix">
     </div>
     <div class="form-group">
       <button type="submit" class="btn btn-primary ml-3" (click)="showRepos(org.value)">Submit</button>
@@ -18,43 +18,78 @@
   </form>
 </div>
 
-<div *ngIf="isLoaded" class="table-container p-2">
-    <div class="card">
-      <div class="card-header">
-        <form>
-            <div class="form-group form-inline">
-                Search: <input class="form-control ml-2" type="text" [formControl]="filter"/>
-            </div>
-        </form>
-      </div>
-      <div class="card-body p-0">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Repository</th>
-              <th scope="col">Description</th>
-              <th scope="col">Creation Date</th>
-              <th scope="col">Forks</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let repo of repos | async; index as i">
-              <th scope="row">{{ i + 1 }}</th>
-              <td>
-                <ngb-highlight [result]="repo.name" [term]="filter.value"></ngb-highlight>
-              </td>
-              <td>
-                <ngb-highlight [result]="repo.description"></ngb-highlight>
-              </td>
-              <td>{{repo.created_at}}</td>
-              <td>
-                <ngb-highlight [result]="repo.forks | number"></ngb-highlight>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+<div *ngIf="(repos$ | async).length > 0 && (error$ | async) !== 404" class="table-container p-2">
+  <div class="card">
+    <div class="card-header">
+      <form>
+        <div class="form-group form-inline" style="display: inline-block">
+          Search: <input class="form-control ml-2" type="text" name="searchTerm" [(ngModel)]="gitService.searchTerm" />
+          <span class="ml-3" *ngIf="gitService.loading$ | async">Loading...</span>
+        </div>
+        <div class="d-flex justify-content-between" style="float: right">
+          <ngb-pagination [collectionSize]="total$ | async" [(page)]="gitService.page" [pageSize]="gitService.pageSize">
+          </ngb-pagination>
+        </div>
+      </form>
+
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Repository</th>
+            <th scope="col">Description</th>
+            <th scope="col">Creation Date</th>
+            <th scope="col">Forks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let repo of repos$ | async; index as i">
+            <th width="5%" scope="row">{{ i + 1 }}</th>
+            <td width="20%">
+              <ngb-highlight [result]="repo.name" [term]="gitService.searchTerm"></ngb-highlight>
+              <img class="ml-2 commit-icon" src="assets/find.png" (click)="open(content,repo)" placement="top" ngbTooltip="Show Recent Commits" />
+            </td>
+            <td width="50%">
+              <ngb-highlight [result]="repo.description"></ngb-highlight>
+            </td>
+            <td width="15%">{{repo.created_at | date}}</td>
+            <td width="10%">
+              <ngb-highlight [result]="repo.forks | number"></ngb-highlight>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="(error$ | async) == 404">
+  <div class="alert alert-danger errorDiv" role="alert">
+    Data Not Found
+  </div>
+</div>
+
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Latest Commits</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body mt-5 mb-5">
+    <div class="row">
+      <div class="col-md-10">
+        <ul class="timeline">
+          <li *ngFor="let commit of commits">
+            <span style="font-weight: bold">Author: </span><span>{{commit.author}}</span>
+            <label class="float-right">{{commit.date | date}}</label>
+            <p style="font-style: italic">{{commit.message}}</p>
+          </li>
+        </ul>
       </div>
     </div>
-
-</div>
+  </div>
+</ng-template>
