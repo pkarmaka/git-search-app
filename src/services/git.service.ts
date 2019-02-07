@@ -22,10 +22,10 @@ export class GitService {
   private _repos$ = new BehaviorSubject<any[]>([]);
   private repos = [];
   private _total$ = new BehaviorSubject<number>(0);
-  // Setting the default state of the page, with the rows set to 10
+  // Setting the default state of the page, with the rows set to 20
   private _state = {
     page: 1,
-    pageSize: 10,
+    pageSize: 20,
     searchTerm: ''
   };
   private _error$ = new BehaviorSubject<number>(0);

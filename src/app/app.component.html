@@ -46,7 +46,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let repo of repos$ | async; index as i">
-            <th width="5%" scope="row">{{ i + 1 }}</th>
+            <th width="5%" scope="row">{{ i + ((gitService.page-1)*gitService.pageSize) + 1 }}</th>
             <td width="20%">
               <ngb-highlight [result]="repo.name" [term]="gitService.searchTerm"></ngb-highlight>
               <img class="ml-2 commit-icon" src="assets/find.png" (click)="open(content,repo)" placement="top" ngbTooltip="Show Recent Commits" />

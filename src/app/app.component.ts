@@ -30,13 +30,6 @@ export class AppComponent {
     this.gitService.getOrgRepos(orgName);
   }
 
-  search(text: string) {
-    return this.data.filter(repo => {
-      const term = text.toLowerCase();
-      return repo.name.toLowerCase().includes(term);
-    });
-  }
-
   /** Click on the icon beside a repo to load
    *  a modal with the list of its latest commits
    **/
