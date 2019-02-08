@@ -21,7 +21,12 @@ rxjs helped with asynchronous aspects of the app. It is a Reactive Extensions Li
 
 ## Development server :zap:
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Steps: 
+1. `git clone https://github.com/pkarmaka/git-search-app.git`
+2. `cd git-search-app/`
+3. `npm install`
+4. `npm install -g @angular/cli`
+5. `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 
 ## Build
